@@ -1,6 +1,13 @@
 ;intro screen
 
 introScreenInit:
+    di
+    ld a, IEF_VBLANK
+    ld [rIE], a
+    ld hl, introVBlankVector
+    ld bc, VBLANK_LOAD_VECTOR
+    ld d, SIZEOF("intro VBlank Vector")
+    call MemCopy
     call WaitVBlank
     ;ld a, LCDCF_OFF| LCDCF_WIN9800 | LCDCF_BG8000 | LCDCF_BGON 
     xor a
@@ -15,6 +22,7 @@ introScreenInit:
     
     ld a, LCDCF_ON| LCDCF_WIN9800 | LCDCF_BG8000 | LCDCF_BG9800 | LCDCF_BGON 
     ldh [rLCDC], a
+    ei
     ret
 
 
@@ -64,3 +72,18 @@ introMap:;len 24
 
 evil_Trademark_tile_data:; trademark.... but EVIL 
 DB $3C,$3C,$42,$42,$BD,$BD,$95,$95,$95,$95,$A9,$A9,$42,$42,$3C,$3C
+
+
+;interrupts
+;============================================
+;vectors
+introVBlankVector:
+    LOAD "intro VBlank Vector", WRAM0[VBLANK_LOAD_VECTOR]
+    jp introVBlank
+    endl
+
+
+
+;routines
+introVBlank:
+    reti

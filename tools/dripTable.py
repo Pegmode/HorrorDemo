@@ -16,7 +16,7 @@ def generateDrip():
         dripTable.append(y)
         velocity += GRAVITY
     f = open(OUT_FILEPATH, "wb")
-    f.write(dripTable)
+    f.write(bytearray(dripTable))
     f.close()
 
 

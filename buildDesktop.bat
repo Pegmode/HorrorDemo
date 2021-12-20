@@ -18,8 +18,8 @@ del %project_name%.map
 echo %project_name%.sym
 del %project_name%.obj
 
-timeout 5
+#timeout 5
 
-:exit
-timeout 10
-exit
+#:exit
+#timeout 10
+#exit

@@ -17,6 +17,12 @@ staticScreenInit:
     call WaitVBlank
     ld a, %01111111
     ld [rLCDC], a
+
+    ;clear vram
+    ld hl, $FE00
+    ld bc, $FF
+    call clearMem
+
     call LoadNormalPallet
     ;load text tiles
     ld hl, vhsFontTiles
@@ -24,10 +30,11 @@ staticScreenInit:
     ld de, $0420+ $0440
     call MemCopyLong
     ;OBJ pallet
-    ld a, %00011011;inverted
+    ld a, %00000011;inverted
     ld [rOBP0], a
     ;load text
     call loadPlayText
+    ;call loadXText1
     ;load random tiles
     ld hl, randTileData
     ld bc, $9000; tile bank 2
@@ -51,6 +58,7 @@ staticScreenInit:
     ret
 
 loadPlayText:
+
     ld de, $FE00
     ld hl, xPlayText
     ld b, 20
@@ -103,12 +111,12 @@ xPlayText:
 
 ;interrupt vectors
 staticVblankVector:
-    LOAD "static VBlank Vector", WRAM0[VBLANK_LOAD_VECTOR]
+    LOAD "static VBlank Vector", WRAM0
     jp staticVBlank
     ENDL
 
 staticLCDVector:
-    LOAD "static LCD Vector", WRAM0[LCD_LOAD_VECTOR]
+    LOAD "static LCD Vector", WRAM0
     jp staticLCDRoutine
     ENDL
 

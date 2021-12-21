@@ -2,7 +2,7 @@
 #logo starts at 0x58
 OUT_FILEPATH = "dripTable.bin"
 INIT_Y = 0x58
-GRAVITY = 2
+GRAVITY = 0.07
 
 MAXY = 160
     
@@ -13,11 +13,13 @@ def generateDrip():
     y = INIT_Y
     while y < MAXY:
         y += velocity
-        dripTable.append(y)
+        dripTable.append(int(y))
         velocity += GRAVITY
+    dripTable.append(0)#sentinel
     f = open(OUT_FILEPATH, "wb")
     f.write(bytearray(dripTable))
     f.close()
+    print(dripTable)
 
 
 generateDrip()

@@ -28,15 +28,20 @@ jp codeInit
 
 SECTION "code",ROM0[$150]
 codeInit:
+
     ;set randomm seed
     ld a, 4
     ld [Seed], a
     inc a
     ld [Seed+1], a
+
+
+
     ;call staticScreenInit
     call introScreenInit
     
 main:
+    halt
     jp main
 
 include "utils.asm"

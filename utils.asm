@@ -24,6 +24,30 @@ MemCopy:
 	jp nz,MemCopy
 	ret
 
+;Input requirements: hl = destination, bc = legnth
+clearMem:
+	xor a
+.clearLoop
+	ld [hl+], a
+	dec bc
+	cp c
+	jr nz,.clearLoop
+	cp b
+	jr nz,.clearLoop
+	ret
+
+;MemSet
+;==========================================================
+;Input requirements: a = data, hl = destination, d = data length
+MemSet:
+	ld [hl+], a
+	dec d
+	jr nz, MemSet
+	ret
+
+	
+
+	
   
 ;Load Standard DMG pallet
 ;============================================================

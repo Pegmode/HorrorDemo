@@ -1,0 +1,6 @@
+tools/carpet/*.jpg
+tools/carpet/*.png
+tools/carpet/*.gif
+*.exe
+*.sym
+*.gb

@@ -12,6 +12,8 @@ introScreenInit:
     ;ld a, LCDCF_OFF| LCDCF_WIN9800 | LCDCF_BG8000 | LCDCF_BGON 
     xor a
     ldh [rLCDC], a
+    call loadNLogo;for emulator
+
     ld a, $FC
     ld [rBGP], a;load intro pallet
     call loadIntroMap
@@ -19,6 +21,7 @@ introScreenInit:
 
     ld hl, $8089
     call introMessup
+
     
     ld a, LCDCF_ON| LCDCF_WIN9800 | LCDCF_BG8000 | LCDCF_BG9800 | LCDCF_BGON  | LCDCF_OBJON | LCDCF_OBJ8
     ldh [rLCDC], a
@@ -179,3 +182,32 @@ dripSprite:
 
 dripTable:
 incbin "dripTable.bin"
+
+
+loadNLogo:;used to emulators or newer systems?
+    ld hl, NLogo
+    ld bc, $8000
+    ld de, $1A0
+    call MemCopyLong
+    ld hl, $9904
+    ld b, 1
+    ld a, $C
+.l1
+    ld [hl], b
+    inc hl
+    inc b
+    dec a
+    jr nz, .l1
+    ld hl, $9924
+    ld a, $B
+.l2 
+    ld [hl], b
+    inc hl
+    inc b
+    dec a
+    jr nz, .l2
+    ret
+
+    
+NLogo:
+    incbin "graphics/N.bin"

@@ -36,7 +36,6 @@ codeInit:
     ld [Seed+1], a
 
 
-
     ;call staticScreenInit
     call introScreenInit
     

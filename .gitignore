@@ -4,3 +4,4 @@ tools/carpet/*.gif
 *.exe
 *.sym
 *.gb
+zlib1.dll

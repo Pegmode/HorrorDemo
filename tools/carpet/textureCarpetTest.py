@@ -20,8 +20,8 @@ class CProgressBar():
         self.showProgress(self.progress)
     def showProgress(self,cProgress):
         percent = 100 * cProgress // self.max
-        bar = "="*int(percent//(100/self.barLength))
-
+        cBarLen = int(percent // (100 / self.barLength))
+        bar = "=" * cBarLen 
         sys.stdout.write(f"\rRendering...: [{bar}]{percent}%")
         sys.stdout.flush()
 
@@ -58,6 +58,19 @@ def sineFuncTest(x):#pull LUT sine value based on overflow LUT pointer
     scale = maxY - mid
     period = 0xFF#the domain of the func. aka the max value of the lookup table
     return math.floor(scale * math.sin((2 * math.pi / period) * x) + mid)
+
+def sineFuncTestOdd(x):#mixed function w/ long dist bg
+    maxY2 = 50
+    minY2 = 20
+    mid2 = maxY2 - (maxY2-minY2)//2
+    scale2 = maxY2 - mid2
+    period2 = 0xFF//4#the domain of the func. aka the max value of the lookup table
+    maxY = 100
+    minY = 20
+    mid = maxY - (maxY-minY)//2
+    scale = maxY - mid
+    period = 0xFF#the domain of the func. aka the max value of the lookup table
+    return math.floor(scale2 * math.sin((2 * math.pi / period2) * x) + mid2) + math.floor(scale * math.sin((2 * math.pi / period) * x) + mid)
 
 def main():
     Z_DEPTH = 0xFF

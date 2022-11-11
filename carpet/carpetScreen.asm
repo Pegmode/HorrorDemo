@@ -46,6 +46,8 @@ generateCarpet1Frame:;generate the offests for a single frame of carpet
     ld b,b
     ret
 
+inc "sineLUT0.asm"
+
 
 
 

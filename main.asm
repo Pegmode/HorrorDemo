@@ -37,8 +37,9 @@ codeInit:
 
 
     ;call staticScreenInit
-    call introScreenInit
-    
+    ;call introScreenInit
+    call carpetScreenInit
+
 main:
     halt
     jp main
@@ -46,6 +47,7 @@ main:
 include "utils.asm"
 include "introScreen.asm"
 include "staticScreen.asm"
+include "carpet/carpetScreen.asm"
 include "graphics/VHS FONT/vhsFontTiles.asm"
 randMapData:
 incbin "randMapData.bin"

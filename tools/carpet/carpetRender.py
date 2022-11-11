@@ -150,15 +150,10 @@ def findColorStart(im,reverse=False):#given an image find the start of the non-b
     return -1
 
 def exportLUT(lut = 0):#export the sine function as a gbasm lut
-    outPath = f"sineLUT{lut}.asm"
+    outPath = f"sineLUT{lut}.bin"
     sineTable = generateSineTable(lut)
-    exportText = f";sineLUT {lut} generated\n\n"
-    for c,v in enumerate(sineTable):
-        exportText += f"db {v}"
-        if c < len(sineTable) - 1:
-            exportText += ", \n"
-    f = open(outPath, "w")
-    f.write(exportText)
+    f = open(outPath, "wb")
+    f.write(bytearray(sineTable))
     f.close()
 
 

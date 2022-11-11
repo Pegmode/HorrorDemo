@@ -1,6 +1,6 @@
 @echo off
 set project_name=HoDemmo
-set bgb="E:\Gb Dev\emu\BGB64.exe"
+set bgb="C:\gbDev\bgb\BGB64.exe"
 
 TASKKILL /IM "BGB64.exe" /F 2>NUL
 
@@ -17,7 +17,7 @@ START "shit" %bgb% %project_name%.gb
 del %project_name%.map
 echo %project_name%.sym
 del %project_name%.obj
-
+pause
 timeout 5
 
 :exit

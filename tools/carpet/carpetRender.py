@@ -1,7 +1,9 @@
+#Code to generate carpet LUT and python test effect renders
 from PIL import Image, ImageDraw, ImagePalette, ImageFont, ImageTk
 import numpy as np
 import math
 import sys
+import pdb
 # INPATH = "online_carpet.jpg"
 INPATH = "test.png"
 OUTPATH = "texture_carpet.gif"
@@ -9,6 +11,8 @@ GB_PALETTE1 = [248,239,121,177,169,74,103,100,42,41,26,15]
 GB_SCREENSIZE = (160,144)
 #global
 MAP_HEIGHT = 0#boo hoo global
+#debug features
+DEBUG_MINMAX = True#add min/max lines to final output
 
 class CProgressBar():
     barLength = 30
@@ -72,6 +76,14 @@ def sineFuncTestOdd(x):#mixed function w/ long dist bg
     period = 0xFF#the domain of the func. aka the max value of the lookup table
     return math.floor(scale2 * math.sin((2 * math.pi / period2) * x) + mid2) + math.floor(scale * math.sin((2 * math.pi / period) * x) + mid)
 
+
+def generateSineTable(func = 0):# generate the sine lookuptable. func determines which sine function is used
+    sineFunctions = {
+        0: sineFuncTest,
+        1: sineFuncTestOdd
+    }
+    return [sineFunctions[func](i) for i in range(0xFF)]#set position initial states
+
 def main():
     Z_DEPTH = 0xFF
     mapImage = Image.open(INPATH)
@@ -80,7 +92,7 @@ def main():
     numberFrames = 0xFF
     pBar = CProgressBar(numberFrames)
     pBar.showProgress(0)
-    segmentPos = [sineFuncTest(i) for i in range(0xFF)]#set position initial states
+    segmentPos = generateSineTable()
     for i in range(0xFF):#frames
         im = Image.new("RGB", GB_SCREENSIZE)
         for j in range(Z_DEPTH):#Z chunks
@@ -88,15 +100,13 @@ def main():
             y = segmentPos[j]#y coord on canvas
             paste_raster(mapImage, im, z, y)
         segmentPos = singleRotateList(segmentPos)
+        if DEBUG_MINMAX: testMaxMin(im)
         frames.append(im.copy())
         pBar.showProgress(i)
     print("\nRendering Complete!")
     
     frames[0].save(OUTPATH,save_all=True, format = "GIF",append_images=frames[1:],duration=25,loop=0)
 
-        
-
-            
 
     # for i in range(0xFF):#frames
     #     im = Image.new("RGB", GB_SCREENSIZE)
@@ -110,9 +120,52 @@ def main():
     # frames[0].save("TextureTest.gif",save_all=True, format = "GIF",append_images=frames[1:],duration=25,loop=0)
             
 
+def debugDrawHorzLine(im, y):#draw a horizontal line on im at y pos
+    draw = ImageDraw.Draw(im)
+    draw.line((0,y, GB_SCREENSIZE[0],y),fill="red")
+
+def testMaxMin(im):#test and output for max/min y values
+    maxY = findColorStart(im)
+    minY = findColorStart(im, True)
+    if -1 in (maxY, minY):
+        raise Exception("Could could Not find a min/max color value (image is completely black?)")
+    debugDrawHorzLine(im,minY)
+    debugDrawHorzLine(im,maxY)
+    draw = ImageDraw.Draw(im)
+    draw.text((0,maxY),f"Max:{maxY}",fill="green")
+    draw.text((0,minY),f"Max:{minY}",fill="green")
+
+
+
+
+def findColorStart(im,reverse=False):#given an image find the start of the non-black pixels in horizontal strips
+    yCoordList = list(range(GB_SCREENSIZE[1]))
+    if reverse:
+        yCoordList.reverse()
+    for i in yCoordList:
+        for j in range(GB_SCREENSIZE[0]):
+            x=im.getpixel((j,i))
+            if im.getpixel((j,i)) != (0,0,0):
+                return i
+    return -1
+
+def exportLUT(lut = 0):#export the sine function as a gbasm lut
+    outPath = f"sineLUT{lut}.asm"
+    sineTable = generateSineTable(lut)
+    exportText = f";sineLUT {lut} generated\n\n"
+    for c,v in enumerate(sineTable):
+        exportText += f"db {v}"
+        if c < len(sineTable) - 1:
+            exportText += ", \n"
+    f = open(outPath, "w")
+    f.write(exportText)
+    f.close()
+
+
 
 
 def test():
     x = remap(12,)
 # test()
-main()
+exportLUT()
+#main()

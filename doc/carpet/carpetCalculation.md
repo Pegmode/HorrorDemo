@@ -1,6 +1,6 @@
 ### carpet calculation
 
-![Diagram image](carpet_memory_diagram.png "Diagram")
+![Diagram image](Carpet_memory_diagram.png "Diagram")
 
 
 $S_y: \text{line in backgroundmap/video memory}$\

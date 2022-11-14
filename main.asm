@@ -10,9 +10,9 @@ vBlankIRQ:
     jp VBLANK_LOAD_VECTOR
     reti
 
-SECTION "LCDC IRA",ROM0[$48]
-lcdIRQ:
-    jp LCD_LOAD_VECTOR
+SECTION "STAT IRQ",ROM0[$48]
+statIRQ:
+    jp STAT_LOAD_VECTOR
     ;jp lcdRoutine
     reti
 

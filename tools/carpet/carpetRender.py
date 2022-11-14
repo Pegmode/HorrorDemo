@@ -152,6 +152,8 @@ def findColorStart(im,reverse=False):#given an image find the start of the non-b
 def exportLUT(lut = 0):#export the sine function as a gbasm lut
     outPath = f"sineLUT{lut}.bin"
     sineTable = generateSineTable(lut)
+    for c, v in enumerate(sineTable):
+        sineTable[c] = zDepth2Raster(v)
     f = open(outPath, "wb")
     f.write(bytearray(sineTable))
     f.close()
@@ -160,7 +162,18 @@ def exportLUT(lut = 0):#export the sine function as a gbasm lut
 
 
 def test():
-    x = remap(12,)
-# test()
-exportLUT()
+    lut = 0
+    sineTable = generateSineTable(lut)
+    for c, v in enumerate(sineTable):
+        sineTable[c] = zDepth2Raster(v)
+    outString = "Table:\n"
+    for c, v in enumerate(sineTable):
+        if c % 16 != 0:
+            outString += f"{hex(v)[2:]},"
+        else:
+            outString += f"{hex(v)[2:]}\n"
+    print(outString)
+
+test()
+#exportLUT()
 #main()

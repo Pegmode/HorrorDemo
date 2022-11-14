@@ -9,7 +9,7 @@ staticScreenInit:
     call MemCopy
 
     ld hl, staticLCDVector
-    ld bc, LCD_LOAD_VECTOR
+    ld bc, STAT_LOAD_VECTOR
     ld de, SIZEOF("static LCD Vector")
     call MemCopyLong
 

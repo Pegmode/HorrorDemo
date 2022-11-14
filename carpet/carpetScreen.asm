@@ -1,11 +1,15 @@
 SECTION "carpet screen", ROMX
 carpetScreenInit:
     di
-    ld a, IEF_VBLANK
+    ld a, IEF_VBLANK | IEF_STAT
     ld [rIE], a
     ld hl, carpetVBlankVector
     ld bc, VBLANK_LOAD_VECTOR
     ld d, SIZEOF("carpet VBlank Vector")
+    call MemCopy
+    ld hl, carpetSTAT
+    ld bc, STAT_LOAD_VECTOR
+    ld d, SIZEOF("carpet STAT Vector")
     call MemCopy
     call WaitVBlank
     xor a
@@ -27,28 +31,22 @@ carpetScreenInit:
     ld a, LCDCF_ON| LCDCF_WIN9800 | LCDCF_BG8000 | LCDCF_BG9800 | LCDCF_BGON  | LCDCF_OBJON | LCDCF_OBJ8
     ldh [rLCDC], a
     xor a
-    ld [currentSinStart], a
+    ld [currentSin], a
+;DEBUG REMOVE
+call calculateCarpetFrame0
     ei
     ret
 
-
-generateCarpet1Frame:;generate the offests for a single frame of carpet
-    ld bc, $c100;raster buffer
-    ld hl, carpetSin1LUT
-    ld a, [currentSinStart]
+calculateCarpetFrame0:
+    ld a, [currentSin]
+    ld hl, sineLUT0
     add a, l
     ld l, a
-    ;unroll loop 256 times
-    include "carpet/carpetWriteLoop.asm"
-    inc l
-    ld a, l
-    ld [currentSinStart], a
-    ld b,b
+    call writeToVirtualScreenUnrolled;unrolled loop
+    ld hl, virtualScreen 
     ret
 
-inc "sineLUT0.asm"
-
-
+include "carpet/writeToVirtualScreenUnrolled.asm"
 
 
 ;interrupts
@@ -59,12 +57,25 @@ carpetVBlankVector:
     jp carpetVBlank
     endl
 
+carpetHBlankVector:
+    LOAD "carpet STAT Vector", WRAM0
+    jp carpetSTAT
+    endl
+
 carpetVBlank: 
-    call generateCarpet1Frame
+    nop
     reti
-    
+
+carpetSTAT:
+    nop
+    reti
+
 include "graphics/carpet/checkerboardVPt.asm"
 SECTION "carpetSin1LUT", ROMX, ALIGN[8]
-carpetSin1LUT:
-    incbin "carpet/carpetSin1.bin"
+sineLUT0:
+    incbin "carpet/sineLUT0.bin"
+
+SECTION "virtualScreen", WRAM0
+sineValues:
+
 

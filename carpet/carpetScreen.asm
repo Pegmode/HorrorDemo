@@ -1,7 +1,7 @@
 SECTION "carpet screen", ROMX
 carpetScreenInit:
     di
-    ld a, IEF_VBLANK | IEF_STAT
+    ld a, IEF_VBLANK 
     ld [rIE], a
     ld hl, carpetVBlankVector
     ld bc, VBLANK_LOAD_VECTOR
@@ -32,8 +32,15 @@ carpetScreenInit:
     ldh [rLCDC], a
     xor a
     ld [currentSin], a
+
 ;DEBUG REMOVE
+.dd1
 call calculateCarpetFrame0
+ld d, 19
+ld c, 99
+call carpetRasterRoutine1
+jr .dd1
+    ld b,b
     ei
     ret
 
@@ -43,12 +50,82 @@ calculateCarpetFrame0:
     add a, l
     ld l, a
     call writeToVirtualScreenUnrolled;unrolled loop
-    ld hl, virtualScreen 
+    ld a, [currentSin]
+    inc a
+    ld [currentSin], a
     ret
 
     
     
-    
+carpetRasterRoutine1:
+;d = first line - 1; c = last line
+.l1
+    ld a, [rLY]
+    cp d
+    jr nz, .l1
+    inc d
+.initRaster
+    ld hl, virtualScreen
+    ld l, d
+    ld b, 0
+    ld a, b
+    ld [rIF], a 
+    ld a, %10
+    ld [rIE], a
+.rasterLoop
+    ld a, l
+    cp c
+    jr z, .exit
+    ld a, %00100000
+    ld [rSTAT], a
+    halt
+    ld a, b
+    ld [rIF], a
+    ld a, %00011000
+    ld [rSTAT], a
+    halt;must have hblank in IE
+    ;screen stuff
+    ld a, [hl]
+    sub l
+    ld [rSCY], a
+    inc l
+    ld a, b
+    ld [rIF], a
+    jr nz, .rasterLoop
+.exit
+    ld b,b
+    ret
+
+carpetRasterRoutineDEBUG:
+    ;for the ly range 20-99
+.l1;wait for line 19
+    ld a, [rLY]
+    cp 19
+    jr nz, .l1
+.init
+    ld b,b
+    ld b, 0
+    ld a, b
+    ld [rIF], a 
+    ld a, %10
+    ld [rIE], a
+    ;iter 1
+    ld a, %00100000
+    ld [rSTAT], a
+    halt
+    ld a, b
+    ld [rIF], a
+    ld a, %00011000
+    ld [rSTAT], a
+    ;screen
+    ld b,b
+    ld b,b
+    ld a, [virtualScreen + 20]
+    sub 20
+    ld [rSCY], a
+    halt
+    ret
+
 
 
 include "carpet/writeToVirtualScreenUnrolled.asm"
@@ -72,7 +149,7 @@ carpetVBlank:
     reti
 
 carpetSTAT:
-    nop
+    
     reti
 
 include "graphics/carpet/checkerboardVPt.asm"

@@ -12,7 +12,7 @@ GB_SCREENSIZE = (160,144)
 #global
 MAP_HEIGHT = 0#boo hoo global
 #debug features
-DEBUG_MINMAX = False#add min/max lines to final output
+DEBUG_MINMAX = True#add min/max lines to final output
 
 class CProgressBar():
     barLength = 30

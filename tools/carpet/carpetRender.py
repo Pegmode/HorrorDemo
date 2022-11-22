@@ -12,7 +12,7 @@ GB_SCREENSIZE = (160,144)
 #global
 MAP_HEIGHT = 0#boo hoo global
 #debug features
-DEBUG_MINMAX = True#add min/max lines to final output
+DEBUG_MINMAX = False#add min/max lines to final output
 
 class CProgressBar():
     barLength = 30
@@ -99,6 +99,9 @@ def main():
             z = zDepth2Raster(j)#depth chunk (need to convert to raster because raster height is small)
             y = segmentPos[j]#y coord on canvas
             paste_raster(mapImage, im, z, y)
+        # for z in range(Z_DEPTH//4):#Z chunks
+        #     y = segmentPos[z]#y coord on canvas
+        #     paste_raster(mapImage, im, z, y)
         segmentPos = singleRotateList(segmentPos)
         if DEBUG_MINMAX: testMaxMin(im)
         frames.append(im.copy())
@@ -137,7 +140,6 @@ def testMaxMin(im):#test and output for max/min y values
 
 
 
-
 def findColorStart(im,reverse=False):#given an image find the start of the non-black pixels in horizontal strips
     yCoordList = list(range(GB_SCREENSIZE[1]))
     if reverse:
@@ -152,12 +154,14 @@ def findColorStart(im,reverse=False):#given an image find the start of the non-b
 def exportLUT(lut = 0):#export the sine function as a gbasm lut
     outPath = f"sineLUT{lut}.bin"
     sineTable = generateSineTable(lut)
-    for c, v in enumerate(sineTable):
-        sineTable[c] = zDepth2Raster(v)
+    # for c, v in enumerate(sineTable):
+    #     sineTable[c] = zDepth2Raster(v)
     f = open(outPath, "wb")
     f.write(bytearray(sineTable))
     f.close()
+    
 
+Z_POSITIONS = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 11, 11, 11, 11, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 14, 14, 15, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 17, 18, 18, 18, 18, 19, 19, 19, 19, 20, 20, 20, 20, 21, 21, 21, 21, 22, 22, 22, 22, 23, 23, 23, 23, 24, 24, 24, 24, 25, 25, 25, 25, 26, 26, 26, 26, 27, 27, 27, 27, 28, 28, 28, 28, 29, 29, 29, 29, 30, 30, 30, 30, 31, 31, 31, 31, 32, 32, 32, 32, 33, 33, 33, 33, 34, 34, 34, 34, 35, 35, 35, 35, 36, 36, 36, 36, 37, 37, 37, 37, 38, 38, 38, 38, 39, 39, 39, 39, 40, 40, 40, 40, 41, 41, 41, 41, 42, 42, 42, 42, 43, 43, 43, 43, 44, 44, 44, 44, 45, 45, 45, 45, 46, 46, 46, 46, 47, 47, 47, 47, 48, 48, 48, 48, 49, 49, 49, 49, 50, 50, 50, 50, 51, 51, 51, 51, 52, 52, 52, 52, 53, 53, 53, 53, 54, 54, 54, 54, 55, 55, 55, 55, 56, 56, 56, 56, 57, 57, 57, 57, 58, 58, 58, 58, 59, 59, 59, 59, 60, 60, 60, 60, 61, 61, 61, 61, 62, 62, 62, 62, 63, 63, 63]
 
 
 
@@ -174,6 +178,6 @@ def test():
             outString += f"{hex(v)[2:]}\n"
     print(outString)
 
-test()
+# test()
 #exportLUT()
-#main()
+main()

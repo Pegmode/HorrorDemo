@@ -3,12 +3,14 @@
 ![Diagram image](Carpet_memory_diagram.png "Diagram")
 
 
-$S_y: \text{line in backgroundmap/video memory}$\
-$SC_y: \text{viewport scroll value}$\
-$S_s: \text{current scanline on screen/viewport}$\
-$m: S_s\text{ in screen plane}$\
+$SC_y: \text{Position of viewfinder & scroll register (rSCY)}$\
+$map_y: \text{Requested line in background map (position from LUT in virtual screen)}$\
+$L_y: \text{Line being currently drawn (rLy)}$\
+$m:L_y \text{ in the background map's plane}$\
+
+
 \
-$m - S_y = 0$\
-$(SC_y + S_s) - S_y = 0$\
-$SC_y + S_s = S_y$\
-$\therefore SC_y = Sy - S_s$\
+$m - map_y = 0$   ,   $(SC_y + Ly) - mapy = 0$\
+$(SC_y + L_y) - map_y = 0$\
+$SC_y + L_y = map_y$\
+$\therefore SC_y = map_y - L_y$

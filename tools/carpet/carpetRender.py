@@ -12,7 +12,7 @@ GB_SCREENSIZE = (160,144)
 #global
 MAP_HEIGHT = 0#boo hoo global
 #debug features
-DEBUG_MINMAX = True#add min/max lines to final output
+DEBUG_MINMAX = False#add min/max lines to final output
 
 class CProgressBar():
     barLength = 30
@@ -64,27 +64,43 @@ def sineFuncTest(x):#pull LUT sine value based on overflow LUT pointer
     return math.floor(scale * math.sin((2 * math.pi / period) * x) + mid)
 
 def sineFuncTestOdd(x):#mixed function w/ long dist bg
-    maxY2 = 50
-    minY2 = 20
-    mid2 = maxY2 - (maxY2-minY2)//2
-    scale2 = maxY2 - mid2
-    period2 = 0xFF//4#the domain of the func. aka the max value of the lookup table
-    maxY = 100
-    minY = 20
-    mid = maxY - (maxY-minY)//2
-    scale = maxY - mid
+    m1 = 20
+    M1 = 99
+    s = M1/2
     period = 0xFF#the domain of the func. aka the max value of the lookup table
-    return math.floor(scale2 * math.sin((2 * math.pi / period2) * x) + mid2) + math.floor(scale * math.sin((2 * math.pi / period) * x) + mid)
+    return math.floor((s/2)* (math.sin((2 * math.pi / period))))
+
+def sineFuncOdd2(x):#from desmos
+    m1 = 20
+    M1 = 99
+    s = M1/2
+    p1 = 255
+    p2 = 127.5
+    h = 68
+    v = 3.7
+    return math.floor((s/v) * (math.sin(((2 * math.pi / p1) * x)) + math.sin((2 * math.pi / p2) * x)) + h)
+
+def sineFuncOdd3(x):#from desmos
+    m1 = 20
+    M1 = 99
+    s = M1/2
+    p1 = 230
+    p2 = 134.9
+    h = 66
+    v = 3.5
+    return math.floor((s/v) * (math.sin(((2 * math.pi / p1) * x)) + math.sin((2 * math.pi / p2) * x)) + h)
 
 
 def generateSineTable(func = 0):# generate the sine lookuptable. func determines which sine function is used
     sineFunctions = {
         0: sineFuncTest,
-        1: sineFuncTestOdd
+        1: sineFuncTestOdd,
+        2: sineFuncOdd2,
+        3: sineFuncOdd3
     }
     return [sineFunctions[func](i) for i in range(0xFF)]#set position initial states
 
-def main():
+def main(func = 0):
     Z_DEPTH = 0xFF
     mapImage = Image.open(INPATH)
     MAP_HEIGHT = mapImage.height
@@ -92,7 +108,7 @@ def main():
     numberFrames = 0xFF
     pBar = CProgressBar(numberFrames)
     pBar.showProgress(0)
-    segmentPos = generateSineTable()
+    segmentPos = generateSineTable(func)
     for i in range(0xFF):#frames
         im = Image.new("RGB", GB_SCREENSIZE)
         for j in range(Z_DEPTH):#Z chunks
@@ -179,5 +195,5 @@ def test():
     print(outString)
 
 # test()
-#exportLUT()
-main()
+#exportLUT(2)
+main(2)

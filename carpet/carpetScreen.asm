@@ -15,10 +15,16 @@ carpetScreenInit:
     xor a
     ldh [rLCDC], a
 
+    ;WHY DOES THE WEIRD BG WORK BETTER!??!
+    ; ld hl, checkerboardVPt_tile_data
+    ; ld bc, $8000
+    ; ld de, $01B0
+    ; call MemCopyLong
+
     ld hl, checkerboardVPt_tile_data
     ld bc, $8000
-    ld de, $01B0
-    call MemCopyLong
+    ld d, $B0
+    call MemCopy
 
     ld hl, checkerboardVPt_map_data
     ld bc, $9800
@@ -34,14 +40,26 @@ carpetScreenInit:
     ld [currentSin], a
 
 ;DEBUG REMOVE
-.dd1
-call calculateCarpetFrame0
-ld d, 19
-ld c, 99
-call carpetRasterRoutine1
-jr .dd1
-    ld b,b
+call runCarpet0
     ei
+    ret
+
+runCarpet0:
+.l1
+    call calculateCarpetFrame0
+    ld d, 20
+    ld c, 99
+    call carpetRasterRoutine
+    jr .l1
+    ret
+
+runCarpet1:
+.l1
+    call calculateCarpetFrame1
+    ld d, 44
+    ld c, 91
+    call carpetRasterRoutine
+    jr .l1
     ret
 
 calculateCarpetFrame0:
@@ -55,9 +73,20 @@ calculateCarpetFrame0:
     ld [currentSin], a
     ret
 
-    
-    
-carpetRasterRoutine1:
+calculateCarpetFrame1:
+    ld a, [currentSin]
+    ld hl, sineLUT1
+    add a, l
+    ld l, a
+    call writeToVirtualScreenUnrolled;unrolled loop
+    ld a, [currentSin]
+    inc a
+    ld [currentSin], a
+    ret
+
+
+carpetRasterRoutine:
+;for a given horizontal scanline range, draw the carpet with SCY
 ;d = first line - 1; c = last line
 .l1
     ld a, [rLY]
@@ -93,38 +122,10 @@ carpetRasterRoutine1:
     ld [rIF], a
     jr nz, .rasterLoop
 .exit
-    ld b,b
+    ld a, c
+    ld [rSCY], a    
     ret
 
-carpetRasterRoutineDEBUG:
-    ;for the ly range 20-99
-.l1;wait for line 19
-    ld a, [rLY]
-    cp 19
-    jr nz, .l1
-.init
-    ld b,b
-    ld b, 0
-    ld a, b
-    ld [rIF], a 
-    ld a, %10
-    ld [rIE], a
-    ;iter 1
-    ld a, %00100000
-    ld [rSTAT], a
-    halt
-    ld a, b
-    ld [rIF], a
-    ld a, %00011000
-    ld [rSTAT], a
-    ;screen
-    ld b,b
-    ld b,b
-    ld a, [virtualScreen + 20]
-    sub 20
-    ld [rSCY], a
-    halt
-    ret
 
 
 
@@ -155,7 +156,10 @@ carpetSTAT:
 include "graphics/carpet/checkerboardVPt.asm"
 SECTION "carpetSin1LUT", ROMX, ALIGN[8]
 sineLUT0:
-    incbin "carpet/sineLUT0.bin"
+     incbin "carpet/sineLUT0.bin"; min 20, max 99
+SECTION "carpetSin2LUT", ROMX, ALIGN[8]     
+sineLUT1:
+    incbin "carpet/sineLUT2.bin"; min 44, max 91
 
 SECTION "virtualScreen", WRAM0
 sineValues:

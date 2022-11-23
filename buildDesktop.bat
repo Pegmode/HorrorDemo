@@ -1,6 +1,6 @@
 @echo off
 set project_name=HoDemmo
-set bgb="C:\gbDev\bgb\BGB64.exe"
+set bgb="E:\Gb Dev\emu\BGB64.exe"
 
 TASKKILL /IM "BGB64.exe" /F 2>NUL
 

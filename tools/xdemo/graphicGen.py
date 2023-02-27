@@ -104,7 +104,6 @@ def generateCheckerBoard():
             draw.line(linePos, lineColor)
             currentX += -currentRowDistance  
             lineIter += 1
-            print(lineIter)
         
         if i % rowDistanceSkip != 0:
             currentRowDistance += 1
@@ -173,8 +172,36 @@ def palSwapAnimate(checkerboardWidths, im):
         swapframes.append(swappedFrame)
 
     frames.extend(swapframes)
+    frames.extend(frames)
+    #COLOR FOR TESTING BG
+    outframes = []
+    for frame in frames:
+        swappedFrame = swapColor(backgroundColor,GB_COLORS1[3], frame)
+        outframes.append(swappedFrame)
+    frames = outframes
+
+    frames = pasteRunner(frames)
+
     frames[0].save("test.gif",save_all=True, format = "GIF",append_images=frames[1:],duration=60,loop=0)
     print(f"Maximum right window movement distance: {maxMovement}")
+
+def pasteRunner(frames):#only for testing visuals. no affect on final demo
+    pos = (50,50)
+    f1 = Image.open("f1.png")
+    f2 = Image.open("f2.png")
+    f3 = Image.open("f3.png")
+    runner = [f1,f2,f3]
+    output = []
+    animFrameWait = 3
+    for i, frame in enumerate(frames):
+        runnerFrameIdx = (i // animFrameWait) % animFrameWait
+        print(runnerFrameIdx)
+        runnerFrame = runner[runnerFrameIdx]
+        frame = frame.convert("RGBA")
+        runnerFrame = runnerFrame.convert("RGBA")
+        frame.paste(runnerFrame, pos, runnerFrame)
+        output.append(frame)
+    return output
 
 
 def main():

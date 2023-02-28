@@ -1,6 +1,6 @@
 @echo off
 set project_name=HoDemmo
-set bgb="C:\gbDev\bgb\BGB64.exe"
+set bgb="E:\Gb Dev\emu\BGB64.exe"
 
 Rem Desktop: bgb="E:\Gb Dev\emu\BGB64.exe"
 Rem LenLap: bgb="C:\gbDev\bgb\BGB64.exe"
@@ -15,7 +15,7 @@ rgbfix -p0 -v %project_name%.gb
 if %errorlevel% neq 0 call :exit 1
 
 echo Assembly success!
-START "shit" %bgb% %project_name%.gb
+START "s" %bgb% %project_name%.gb
 
 del %project_name%.map
 echo %project_name%.sym

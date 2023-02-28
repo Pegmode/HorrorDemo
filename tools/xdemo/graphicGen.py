@@ -9,7 +9,7 @@ GB_MIDDLE_VIEWPORT = GB_SCREENSIZE[0]//2
 
 PLANE_HEIGHT = 80#8*10
 
-WIDTH = GB_SCREENSIZE[0] +  34
+WIDTH = GB_SCREENSIZE[0] +  40
 HEIGHT = GB_SCREENSIZE[1]
 
 SHOW_DEBUG_GRAPHIC = True
@@ -67,7 +67,7 @@ def generateWireframe():
 def generateCheckerBoard():
     #generate base checkerboard image
     checkerboardWidths = []
-    im = Image.new("RGB", BG_SIZE, GB_COLORS1[3])
+    im = Image.new("RGB", BG_SIZE, GB_COLORS1[2])
     currentRowDistance = 8# The distance in between checker segments for the current row
     startX = GB_SCREENSIZE[0]//2
     draw = ImageDraw.Draw(im)

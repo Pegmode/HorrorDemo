@@ -12,8 +12,13 @@ union
     V_intro_dripCounter3:    ds 1  
 endu
 
+;carpet
 currentSin: ds 1;move to union
 virtualScreen: ds $FF
+
+;xdemo
+V_currentFrame: ds 1
+
 SECTION "Interrupt Vectors", wram0
     VBLANK_LOAD_VECTOR: ds 5
     STAT_LOAD_VECTOR: ds 5

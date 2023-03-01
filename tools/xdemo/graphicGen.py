@@ -114,27 +114,40 @@ def generateCheckerBoard():
     return checkerboardWidths, im
 
 
+def rotateLUT(l):
+    rotated = [list(row) for row in zip(*l[::-1])]
+    for v in rotated:
+        v.reverse()
+    return rotated
+
+
 def generateAnimation(checkerboardWidths, im):
-    #generate   
+    #generate
+    xScrollLUT = []
     frames = []
     frameLen = 4
     maxMovement = 0
     offsets = [0] * (PLANEMAX - PLANEMIN)
     for i in range(frameLen):
+        xScrollFrameLUT = []
         canvas = Image.new("RGB", GB_SCREENSIZE, GB_COLORS1[3])
         #draw.text((0, 10), "DO YOU DIE AS IT IS HERE,\n THE EXIT IS NOT FOUND")
         for j, y in enumerate(range(PLANEMIN,PLANEMAX)):
             pasteX = offsets[j]
             pasteX = math.ceil((checkerboardWidths[j] / frameLen) * i)
+            xScrollFrameLUT.append(pasteX)
             paste_raster(im, canvas, y, pasteX)
             offsets[j] += j + 1
             if pasteX > maxMovement:
                 maxMovement = pasteX
+        xScrollLUT.append(xScrollFrameLUT)
             
         frames.append(canvas)
   
     frames[0].save("test.gif",save_all=True, format = "GIF",append_images=frames[1:],duration=60,loop=0)
     print(f"Maximum right window movement distance: {maxMovement}")
+    #xScrollLUT = rotateLUT(xScrollLUT) #removed rotate to save on gb resources
+    return xScrollLUT
 
 
 def swapColor(c1, c2, im):
@@ -195,7 +208,6 @@ def pasteRunner(frames):#only for testing visuals. no affect on final demo
     animFrameWait = 3
     for i, frame in enumerate(frames):
         runnerFrameIdx = (i // animFrameWait) % animFrameWait
-        print(runnerFrameIdx)
         runnerFrame = runner[runnerFrameIdx]
         frame = frame.convert("RGBA")
         runnerFrame = runnerFrame.convert("RGBA")
@@ -204,11 +216,22 @@ def pasteRunner(frames):#only for testing visuals. no affect on final demo
     return output
 
 
+def generateLUT(xScrollLUT):
+    #format is NOT rotated because we want to avoid GB side calculation.
+    output = ";background floor LUT\n"
+    for i, yLevel in enumerate(xScrollLUT):
+        output += f"row{PLANEMIN+i}: db {yLevel[0]}, {yLevel[1]}, {yLevel[2]}, {yLevel[3]}, $FF\n"
+    f = open("xdemoBgLUT.asm", "w")
+    f.write(output)
+    f.close()
+
 def main():
     #checkerboardWidths, im = generateWireframe()
     checkerboardWidths, im = generateCheckerBoard()
-    #generateAnimation(checkerboardWidths, im)
-    palSwapAnimate(checkerboardWidths, im)
+    xScrollLUT = generateAnimation(checkerboardWidths, im)
+    generateLUT(xScrollLUT)
+    #palSwapAnimate(checkerboardWidths, im)
+
 
 
 

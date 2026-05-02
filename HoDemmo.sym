@@ -96,5 +96,6 @@
 00:c007 V_intro_dripCounter3
 00:c008 currentSin
 00:c009 virtualScreen
-00:c108 VBLANK_LOAD_VECTOR
-00:c10d STAT_LOAD_VECTOR
+00:c108 V_currentFrame
+00:c109 VBLANK_LOAD_VECTOR
+00:c10e STAT_LOAD_VECTOR
